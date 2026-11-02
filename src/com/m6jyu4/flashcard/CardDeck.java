@@ -1,4 +1,4 @@
-package com.jyu4.flashcard;
+package com.m6jyu4.flashcard;
 
 import java.io.*;
 import java.util.ArrayList;
@@ -25,7 +25,7 @@ class CardDeck {
                 String line;
                 String[] text;
 
-                int lineNo = 1;
+                int lineNo = 0;
                 List<Card> parsedCards = new ArrayList<>();
 
                 while ((line = reader.readLine()) != null) {

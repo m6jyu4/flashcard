@@ -1,4 +1,4 @@
-package com.jyu4.flashcard;
+package com.m6jyu4.flashcard;
 
 import javax.swing.*;
 import java.awt.*;

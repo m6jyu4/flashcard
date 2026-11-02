@@ -1,4 +1,4 @@
-package com.jyu4.flashcard;
+package com.m6jyu4.flashcard;
 
 import javax.swing.*;
 import java.awt.*;
@@ -9,10 +9,9 @@ import static javax.swing.BorderFactory.createMatteBorder;
 
 class FlashcardPanel extends JPanel implements ActionListener{
 
+        private enum State { QUESTION, ANSWER, DONE}
+        private State currentState = State.QUESTION;
 
-
-        private static final Color TEXT_COLOUR = new Color(0xf2f2f2);
-        private static final Font TEXT_FONT = new Font("Arial", Font.PLAIN, 50);
         private static final Font BUTTON_FONT = new Font("Arial", Font.PLAIN, 25);
 
         private JLabel questionLabel;
@@ -23,9 +22,6 @@ class FlashcardPanel extends JPanel implements ActionListener{
         private String question = null;
         private String answer = null;
         private String explanation = null;
-
-        boolean isShowingAnswer = false;
-        boolean isOutOfCards = false;
 
         private CardDeck deck;
 
@@ -38,6 +34,7 @@ class FlashcardPanel extends JPanel implements ActionListener{
         }
 
         private void initPanel() {
+
                 setLayout(new GridLayout(6, 1, 0, 0));
                 setBackground(new Color(0x222222));
 
@@ -48,36 +45,23 @@ class FlashcardPanel extends JPanel implements ActionListener{
                 var questionPanel = new JPanel();
                 questionPanel.setOpaque(false);
 
-                questionLabel = new JLabel();
-
-                questionLabel.setForeground(TEXT_COLOUR);
-                questionLabel.setFont(TEXT_FONT);
-                questionLabel.setHorizontalAlignment(SwingConstants.CENTER);
-
+                questionLabel = new FlashcardLabel();
                 questionLabel.setBorder(createMatteBorder(0,0,1,0, Color.WHITE));
-
                 questionPanel.add(questionLabel);
+
                 add(questionPanel);
 
                 // row 3
-                answerLabel = new JLabel();
-
-                answerLabel.setForeground(TEXT_COLOUR);
-                answerLabel.setFont(TEXT_FONT);
-                answerLabel.setHorizontalAlignment(SwingConstants.CENTER);
-
+                answerLabel = new FlashcardLabel();
                 add(answerLabel);
 
                 // row 4
                 var explanationPanel = new JPanel();
                 explanationPanel.setOpaque(false);
-                explanationLabel = new JLabel();
 
-                explanationLabel.setForeground(TEXT_COLOUR);
-                explanationLabel.setFont(BUTTON_FONT);
-                explanationLabel.setHorizontalAlignment(SwingConstants.CENTER);
-
+                explanationLabel = new FlashcardLabel();
                 explanationPanel.add(explanationLabel);
+
                 add(explanationPanel);
 
                 // row 5
@@ -103,9 +87,9 @@ class FlashcardPanel extends JPanel implements ActionListener{
         public void actionPerformed(ActionEvent actionEvent) {
                 if (actionEvent.getSource() != this.button) return;
 
-                if (isOutOfCards) return;
+                if (currentState == State.DONE) return;
 
-                if (!isShowingAnswer) {
+                if (currentState == State.QUESTION) {
                         showAnswer();
                 } else {
                         showNextQuestion();
@@ -113,7 +97,7 @@ class FlashcardPanel extends JPanel implements ActionListener{
         }
 
         private void showAnswer() {
-                isShowingAnswer = true;
+                currentState = State.ANSWER;
 
                 answerLabel.setText(answer);
                 explanationLabel.setText(explanation);
@@ -122,11 +106,11 @@ class FlashcardPanel extends JPanel implements ActionListener{
         }
 
         private void showNextQuestion() {
-                isShowingAnswer = false;
+                currentState = State.QUESTION;
 
                 if (!deck.hasNext()) {
 
-                        isOutOfCards = true;
+                        currentState = State.DONE;
 
                         questionLabel.setText(null);
                         answerLabel.setText(null);
